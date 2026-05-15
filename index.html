@@ -243,9 +243,9 @@ body.light .badge-desatualizado, body.light .badge-sem-perfil { background: rgba
 
 <main class="main">
   <div class="search-card">
-    <label class="search-label">🔍 Digite o nome do cliente (mínimo 3 letras)</label>
+    <label class="search-label">🔍 Digite nome ou código do cliente (mínimo 3 letras/números)</label>
     <div class="search-wrapper">
-      <input type="text" id="searchInput" class="search-input" placeholder="Ex.: ALESSANDRA, MARIA, JOÃO..." autocomplete="off">
+      <input type="text" id="searchInput" class="search-input" placeholder="Ex.: ALESSANDRA, MARIA, 43280, 6681173..." autocomplete="off">
       <button id="clearBtn" class="clear-btn" aria-label="Limpar busca">✕</button>
       <div id="suggestionsList" class="suggestions"></div>
     </div>
@@ -253,7 +253,7 @@ body.light .badge-desatualizado, body.light .badge-sem-perfil { background: rgba
 
   <div id="resultContainer"></div>
 </main>
-<footer class="footer">📌 Digite pelo menos 3 letras para ver as sugestões. Clique em um cliente para visualizar o card completo. Botão ✕ limpa a busca.</footer>
+<footer class="footer">📌 Busca por nome ou código XP (mínimo 3 caracteres). Clique no resultado desejado para ver os detalhes.</footer>
 
 <script>
 // ============================================================
@@ -415,13 +415,17 @@ function formatPerfil(perfil) {
 }
 
 function renderSuggestions(filterText) {
-  const searchTerm = normalize(filterText);
-  if (searchTerm.length < 3) {
+  const term = normalize(filterText);
+  if (term.length < 3) {
     document.getElementById('suggestionsList').classList.remove('show');
     return;
   }
   
-  const filtered = clientesData.filter(c => normalize(c.nome).includes(searchTerm));
+  // Filtra por nome OU código
+  const filtered = clientesData.filter(c => 
+    normalize(c.nome).includes(term) || 
+    c.codigo.includes(term)
+  );
   const suggestionsDiv = document.getElementById('suggestionsList');
   
   if (filtered.length === 0) {
