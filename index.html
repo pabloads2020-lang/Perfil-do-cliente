@@ -62,10 +62,12 @@ body {
 }
 .search-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 .search-input {
   width: 100%;
-  padding: 14px 18px;
+  padding: 14px 50px 14px 18px;
   font-size: 16px;
   background: var(--input-bg);
   border: 1px solid var(--input-border);
@@ -78,6 +80,25 @@ body {
 .search-input:focus {
   border-color: var(--gold);
   box-shadow: 0 0 0 2px rgba(245, 200, 66, 0.2);
+}
+.clear-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text3);
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.clear-btn:hover {
+  color: var(--gold);
+  background: rgba(255,255,255,0.05);
 }
 .suggestions {
   position: absolute;
@@ -225,13 +246,14 @@ body.light .badge-desatualizado, body.light .badge-sem-perfil { background: rgba
     <label class="search-label">🔍 Digite o nome do cliente (mínimo 3 letras)</label>
     <div class="search-wrapper">
       <input type="text" id="searchInput" class="search-input" placeholder="Ex.: ALESSANDRA, MARIA, JOÃO..." autocomplete="off">
+      <button id="clearBtn" class="clear-btn" aria-label="Limpar busca">✕</button>
       <div id="suggestionsList" class="suggestions"></div>
     </div>
   </div>
 
   <div id="resultContainer"></div>
 </main>
-<footer class="footer">📌 Digite pelo menos 3 letras para ver as sugestões. Clique em um cliente para visualizar o card completo.</footer>
+<footer class="footer">📌 Digite pelo menos 3 letras para ver as sugestões. Clique em um cliente para visualizar o card completo. Botão ✕ limpa a busca.</footer>
 
 <script>
 // ============================================================
@@ -370,7 +392,7 @@ const clientesData = [
   { codigo: "7086217", nome: "YASIEL LOPEZ REQUEJO", perfil: "Agressivo" }
 ];
 
-// Função para normalizar texto (sem acentos, caixa alta)
+// Função para normalizar texto
 function normalize(str) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
@@ -385,7 +407,6 @@ function getBadgeClass(perfil) {
   return "badge-sem-perfil";
 }
 
-// Formatar nome do perfil para exibição
 function formatPerfil(perfil) {
   if (!perfil) return "Não informado";
   if (perfil.toLowerCase() === "desatualizado") return "Desatualizado";
@@ -393,7 +414,6 @@ function formatPerfil(perfil) {
   return perfil.charAt(0).toUpperCase() + perfil.slice(1).toLowerCase();
 }
 
-// Renderizar sugestões
 function renderSuggestions(filterText) {
   const searchTerm = normalize(filterText);
   if (searchTerm.length < 3) {
@@ -427,7 +447,6 @@ function renderSuggestions(filterText) {
   suggestionsDiv.innerHTML = html;
   suggestionsDiv.classList.add('show');
   
-  // Adiciona eventos de clique nas sugestões
   document.querySelectorAll('.suggestion-item').forEach(item => {
     item.addEventListener('click', () => {
       const codigo = item.dataset.codigo;
@@ -465,14 +484,22 @@ function mostrarCliente(cliente) {
   document.getElementById('resultContainer').innerHTML = resultHtml;
 }
 
-// Evento de input na busca
+function limparBusca() {
+  const searchInput = document.getElementById('searchInput');
+  searchInput.value = '';
+  document.getElementById('suggestionsList').classList.remove('show');
+  document.getElementById('resultContainer').innerHTML = '';
+  searchInput.focus();
+}
+
+// Eventos
 const searchInput = document.getElementById('searchInput');
 searchInput.addEventListener('input', (e) => {
-  const val = e.target.value;
-  renderSuggestions(val);
+  renderSuggestions(e.target.value);
 });
 
-// Fechar sugestões ao clicar fora
+document.getElementById('clearBtn').addEventListener('click', limparBusca);
+
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.search-wrapper')) {
     document.getElementById('suggestionsList').classList.remove('show');
