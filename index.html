@@ -253,151 +253,44 @@ body.light .badge-desatualizado, body.light .badge-sem-perfil { background: rgba
 
   <div id="resultContainer"></div>
 </main>
-<footer class="footer">📌 Busca por nome ou código XP (mínimo 3 caracteres). Clique no resultado desejado para ver os detalhes.</footer>
+<footer class="footer">📌 Busca por nome ou código (mínimo 3 caracteres). Clique no resultado desejado para ver os detalhes.</footer>
 
 <script>
 // ============================================================
-// BASE DE CLIENTES (Código XP - Nome - Perfil)
+// DADOS OFUSCADOS (Base64 + reversão)
 // ============================================================
-const clientesData = [
-  { codigo: "6681173", nome: "ALCIONE MARQUES FERNANDES", perfil: "Agressivo" },
-  { codigo: "15693646", nome: "ALESSANDRA BARRETO MIRANDA SEABRA", perfil: "Conservador" },
-  { codigo: "43280", nome: "ALESSANDRA GOMES GURGEL DO AMARAL", perfil: "Moderado" },
-  { codigo: "8172581", nome: "ALVARO SILVA RIBEIRO", perfil: "Moderado" },
-  { codigo: "6433856", nome: "ANA PAULLA DE VASCONCELOS", perfil: "Moderado" },
-  { codigo: "6860323", nome: "ANDRE GOBBO RIBEIRO", perfil: "Agressivo" },
-  { codigo: "17203347", nome: "ANDRE SCHUSTER DA COSTA", perfil: "Agressivo" },
-  { codigo: "5533399", nome: "ANDREA QUEIROZ BRANDT", perfil: "Agressivo" },
-  { codigo: "516477", nome: "ANGELA MARIA ZOBOLI", perfil: "Agressivo" },
-  { codigo: "2530294", nome: "ANNA CARINA QUINHO RAMALHO", perfil: "Moderado" },
-  { codigo: "8646500", nome: "ANTONIO CARLOS BRIZZI", perfil: "Agressivo" },
-  { codigo: "4248359", nome: "ANTONIO VINICIUS DE ASSIS FEITOSA JUNIOR", perfil: "Moderado" },
-  { codigo: "517002", nome: "ARTHUR CORDEIRO GOMES ARAUJO", perfil: "Agressivo" },
-  { codigo: "2777709", nome: "ARTHUR SANDRO GOLOMBIESKI FERREIRA", perfil: "Agressivo" },
-  { codigo: "7986462", nome: "ARTUR JOSE COSTA RAPOSO", perfil: "Agressivo" },
-  { codigo: "17130854", nome: "BENTONISA", perfil: "Moderado" },
-  { codigo: "9009584", nome: "BEQUEST CAPITAL ASSESSOR DE INVESTIMENTOS LTDA", perfil: "Conservador" },
-  { codigo: "595504", nome: "BRENDA MORAIS DE ALMEIDA", perfil: "Moderado" },
-  { codigo: "8040970", nome: "BRUNO DE MATOS BRIZZI", perfil: "Agressivo" },
-  { codigo: "7968337", nome: "BRUNO DOMINGUES ALENCAR DE BARROS", perfil: "Moderado" },
-  { codigo: "6433769", nome: "CAIO KLIPPEL AMARAL", perfil: "Agressivo" },
-  { codigo: "4944698", nome: "CAIO MARIO MELLO COSTA OLIVEIRA", perfil: "Moderado" },
-  { codigo: "7811551", nome: "CAIO MARIO MELLO COSTA OLIVEIRA 2", perfil: "Moderado" },
-  { codigo: "7045639", nome: "CAIO MARIO MELLO COSTA OLIVEIRA SOBRINHO", perfil: "Agressivo" },
-  { codigo: "350633", nome: "CALVIN LEI", perfil: "Moderado" },
-  { codigo: "3544504", nome: "CASSIA PAIVA VIEIRA ANDRADE", perfil: "Agressivo" },
-  { codigo: "497712", nome: "CATHRYNE LEI", perfil: "Moderado" },
-  { codigo: "9225071", nome: "CHRISTINE RIBEIRO MEIRA E SA", perfil: "Moderado" },
-  { codigo: "2985252", nome: "CYRO CESAR PALITOT REMIGIO ALVES", perfil: "Conservador" },
-  { codigo: "106838", nome: "DANIELA RAAB PIRES", perfil: "Agressivo" },
-  { codigo: "18186042", nome: "DAVI RAMALHO DALIA", perfil: "Conservador" },
-  { codigo: "11868214", nome: "DEBORA TATIANE PAULINO DA SILVA", perfil: "Agressivo" },
-  { codigo: "2271723", nome: "DIOGO FARKATT KABBAZ", perfil: "Agressivo" },
-  { codigo: "18309012", nome: "DOUGLAS D AGOSTINI", perfil: "Agressivo" },
-  { codigo: "3612958", nome: "EDINARDO DO NASCIMENTO JUNIOR", perfil: "Agressivo" },
-  { codigo: "2657269", nome: "EDUARDO FREYRE COSTA OLIVEIRA", perfil: "Agressivo" },
-  { codigo: "475924", nome: "EDUARDO HENRIQUE PEREIRA DE CARVALHO", perfil: "Moderado" },
-  { codigo: "4377745", nome: "EJOS SOUZA MARTINS", perfil: "Agressivo" },
-  { codigo: "7614246", nome: "ELAINE CRISTINA COSTA DE PAULO", perfil: "Agressivo" },
-  { codigo: "7277055", nome: "ELISIO GUERRA DE SOUZA", perfil: "Agressivo" },
-  { codigo: "2235365", nome: "ELOI FERNANDO BASSO", perfil: "Agressivo" },
-  { codigo: "7755854", nome: "ERICLES MARTINS ALVES", perfil: "Moderado" },
-  { codigo: "4902215", nome: "FELIPE ARCHILHA MARTINS*", perfil: "Agressivo" },
-  { codigo: "4113981", nome: "FELIPE LEAL RODRIGO DE MOURA", perfil: "desatualizado" },
-  { codigo: "1038106", nome: "FERNANDO QUARANTA BARBOSA", perfil: "Moderado" },
-  { codigo: "5081592", nome: "FOX ADMINISTRAÇÕES", perfil: "Agressivo" },
-  { codigo: "2926946", nome: "FRANCISCO QUARANTA NETO", perfil: "Agressivo" },
-  { codigo: "9015538", nome: "GIBRAN KHALYL ARRUDA NETO", perfil: "Conservador" },
-  { codigo: "15057853", nome: "GIOVANNA GUSMAO DE BARROS CAVALCANTI", perfil: "Sem Perfil" },
-  { codigo: "7575840", nome: "GRETA YALE LIMA DOS SANTOS", perfil: "Agressivo" },
-  { codigo: "13546023", nome: "H DA COSTA PEREIRA LTDA", perfil: "Agressivo" },
-  { codigo: "15663935", nome: "HELENIDES JACIRA CAVALCANTI", perfil: "Conservador" },
-  { codigo: "4384982", nome: "HELLYDA MARCIA VIEIRA DAS FLORES", perfil: "Moderado" },
-  { codigo: "17945733", nome: "HOSANA MARIA DE SOUZA BOSSAN", perfil: "Moderado" },
-  { codigo: "9086032", nome: "INGRYD GABRIELLA NASCIMENTO SANTOS", perfil: "Moderado" },
-  { codigo: "11010007", nome: "ISABELA NOGUEIRA FERNANDES", perfil: "Agressivo" },
-  { codigo: "287712", nome: "JAIRO ARLINDO MATTOS", perfil: "Agressivo" },
-  { codigo: "3373440", nome: "JAIRO JOSÉ AMARAL JUNIOR", perfil: "Conservador" },
-  { codigo: "18217085", nome: "JANETT JANE LIBERALINO", perfil: "Moderado" },
-  { codigo: "2599988", nome: "JOAO PAULO DE ARAUJO MEDEIROS", perfil: "Agressivo" },
-  { codigo: "14827655", nome: "JOAO PEDRO GOMES VELOSO", perfil: "Moderado" },
-  { codigo: "16318377", nome: "JOSANE MARIA", perfil: "Moderado" },
-  { codigo: "7813363", nome: "JOSE DE MELLO COSTA OLIVEIRA FILHO", perfil: "Agressivo" },
-  { codigo: "86190", nome: "JOSE EYMARD MORAES DE MEDEIROS FILHO", perfil: "Agressivo" },
-  { codigo: "349399", nome: "JOSE GUILHERME COSTA OLIVEIRA DE VASCONCELOS", perfil: "Agressivo" },
-  { codigo: "6119721", nome: "KARLENO LOUREIRO DOS SANTOS", perfil: "Moderado" },
-  { codigo: "17288465", nome: "KATIA CILENE CARNEIRO DE OLIVEIRA", perfil: "Conservador" },
-  { codigo: "17605941", nome: "KATIA CILENE CARNEIRO DE OLIVEIRA 2", perfil: "Conservador" },
-  { codigo: "17412770", nome: "LARA LECY NOGUEIRA BARBOSA DE SOUSA FEITOSA", perfil: "Conservador" },
-  { codigo: "2551220", nome: "LEONARDO CALDAS QUARANTA", perfil: "Agressivo" },
-  { codigo: "2338261", nome: "LEONARDO RAMALHO DINIZ FORTE FREIRE", perfil: "Moderado" },
-  { codigo: "18231544", nome: "LILLY CHONG LEI SANTOS", perfil: "Moderado" },
-  { codigo: "2926795", nome: "LIOMAR DE OLIVEIRA QUARANTA", perfil: "Moderado" },
-  { codigo: "4417597", nome: "LIOMAR MARIA DE OLIVEIRA QUARANTA", perfil: "desatualizado" },
-  { codigo: "3033135", nome: "LUCAS SANTOS DE SOUZA", perfil: "Agressivo" },
-  { codigo: "3126737", nome: "LUCAS WILLIAM DE SOUZA", perfil: "Agressivo" },
-  { codigo: "5665659", nome: "MARCELA SILVA TEIXEIRA", perfil: "Moderado" },
-  { codigo: "357946", nome: "MARCELLA QUINHO RAMALHO", perfil: "Moderado" },
-  { codigo: "17687292", nome: "MARCELO DE OLIVEIRA SOARES", perfil: "Agressivo" },
-  { codigo: "3353545", nome: "MARCELO ISSAMU ONO", perfil: "Moderado" },
-  { codigo: "2457434", nome: "MARCELO KENJI LIMA NISHINA", perfil: "Moderado" },
-  { codigo: "2173238", nome: "MARCIA GLORIA TAVARES PEREIRA DE CARVALHO", perfil: "Agressivo" },
-  { codigo: "71768", nome: "MARCIA RACHEL PEREIRA DE CARVALHO", perfil: "Agressivo" },
-  { codigo: "14372686", nome: "MARIA CAROLINA GUERRA MALTA", perfil: "Moderado" },
-  { codigo: "5914653", nome: "MARIA CECILIA BRANDT COSTA OLIVEIRA", perfil: "Moderado" },
-  { codigo: "6907500", nome: "MARIA CECILIA COSTA OLIVEIRA VASCONCELOS PFALTZGRAFF", perfil: "Moderado" },
-  { codigo: "15809174", nome: "MARIA DO CARMO IVANI DE VASCONCELOS", perfil: "Agressivo" },
-  { codigo: "7263126", nome: "MARIA DO CARMO RAMOS DA SILVA BIZARRO", perfil: "Moderado" },
-  { codigo: "406780", nome: "MARIA LIDUINA DE SOUZA ARARUNA RIBEIRO", perfil: "Moderado" },
-  { codigo: "3762125", nome: "MARIA MANUELA DE ARAUJO MEDEIROS", perfil: "Agressivo" },
-  { codigo: "5261831", nome: "MARIO ARTHUR COSTA SALZANO", perfil: "Agressivo" },
-  { codigo: "6459565", nome: "MATEUS CESAR DE ARAUJO RODRIGUES", perfil: "Moderado" },
-  { codigo: "11131295", nome: "MAURO ALENCAR DE BARROS", perfil: "Moderado" },
-  { codigo: "6474961", nome: "NATALIA TORRES MAIA", perfil: "Moderado" },
-  { codigo: "7724230", nome: "OLGA LIDIA CORRALES RUBIO", perfil: "Agressivo" },
-  { codigo: "9067930", nome: "PAULO ANDRE MOUSINHO COSTA OLIVEIRA", perfil: "Agressivo" },
-  { codigo: "4142705", nome: "PAULO JOSE HAIEK ARAUJO", perfil: "Agressivo" },
-  { codigo: "9284827", nome: "PAULO ROBERTO NERI DE AVIZ SILVA*", perfil: "Agressivo" },
-  { codigo: "8800750", nome: "PEDRO HENRIQUE PIRES DE GODOY", perfil: "Agressivo" },
-  { codigo: "18722164", nome: "PEGMATECH", perfil: "Conservador" },
-  { codigo: "9042684", nome: "PROMOVE ADMINISTRADORA DE CONSÓRCIOS LTDA", perfil: "Conservador" },
-  { codigo: "4326120", nome: "RAMONA CAVALCANTE GUIMARAES FREYRE", perfil: "Moderado" },
-  { codigo: "18616826", nome: "RICARDO DE MACEDO CHAVES", perfil: "Moderado" },
-  { codigo: "14876007", nome: "ROBERTA VILLAS BOAS CARVALHO MARTINS", perfil: "Moderado" },
-  { codigo: "18989528", nome: "ROBSON GOMES PIMENTEL", perfil: "Conservador" },
-  { codigo: "5622427", nome: "RODRIGO NICOLAU PFALTZGRAFF", perfil: "Agressivo" },
-  { codigo: "578206", nome: "ROMERO FREYRE COSTA OLIVEIRA", perfil: "Agressivo" },
-  { codigo: "4107272", nome: "ROSANGELA MARIA RAMOS BIZARRO", perfil: "Moderado" },
-  { codigo: "11547167", nome: "ROSELY DARDES PIMENTEL", perfil: "Agressivo" },
-  { codigo: "17036267", nome: "SAULO PIQUET DA CRUZ", perfil: "Agressivo" },
-  { codigo: "12151844", nome: "SEBASTIAO JORGE PEREIRA", perfil: "Agressivo" },
-  { codigo: "13273866", nome: "SILVIO APARECIDO COSTA", perfil: "Agressivo" },
-  { codigo: "11859464", nome: "SONIA FREYRE COSTA", perfil: "Moderado" },
-  { codigo: "7999090", nome: "SONIA REGINA DE MATOS BRIZZI", perfil: "Agressivo" },
-  { codigo: "8474283", nome: "SORAYA GUERRA DE SOUZA", perfil: "Moderado" },
-  { codigo: "19333125", nome: "TAINA AMORIM DE PAULA", perfil: "Conservador" },
-  { codigo: "309019", nome: "TAMYRES DARDES PIMENTEL", perfil: "Moderado" },
-  { codigo: "3874196", nome: "TATIANA VECCHI MARMO", perfil: "Agressivo" },
-  { codigo: "15499982", nome: "THOMAZ LEAO DO CARMO", perfil: "Agressivo" },
-  { codigo: "2319500", nome: "TIBERIO CABRAL GOMES DE SOUZA", perfil: "Moderado" },
-  { codigo: "52826", nome: "TRAJANO RAMALHO FILHO", perfil: "Moderado" },
-  { codigo: "18898403", nome: "VALDENICE BEZERRA ALVES", perfil: "Moderado" },
-  { codigo: "3658049", nome: "VALERIA APARECIDA ZERBINI MENDES", perfil: "Agressivo" },
-  { codigo: "2628507", nome: "VAMBERTO OLIVEIRA DE AZEVEDO MAIA FILHO", perfil: "Agressivo" },
-  { codigo: "6604381", nome: "VANESSA VIEIRA MAGANHA", perfil: "Agressivo" },
-  { codigo: "6878921", nome: "VIRGINIA LUIZA GOBBO RIBEIRO", perfil: "Agressivo" },
-  { codigo: "2805206", nome: "WAGNER LUIZ DE SOUZA SEABRA", perfil: "Moderado" },
-  { codigo: "4656602", nome: "WALDEMAR TADEU FIGUEIRA", perfil: "Agressivo" },
-  { codigo: "4748732", nome: "WALFREDO LUIZ DE SOUZA SEABRA", perfil: "Moderado" },
-  { codigo: "7086217", nome: "YASIEL LOPEZ REQUEJO", perfil: "Agressivo" }
-];
+const dadosOfuscados = "WyI4NjgxMTczLEFMQ0lPTkUgTUFSUVVFUyBGRVJOQU5ERVMsQWdyZXNzaXZvIiwiMTU2OTM2NDYsQUxFU1NBTkRSQSBCQVJSRVRPIE1JUkFOREEgU0VBQlJBLENvbnNlcnZhZG9yIiwiNDMyODAsQUxFU1NBTkRSQSBHT01FUyBHVVJHRUwgRE8gQU1BUkFMLE1vZGVyYWRvIiwiODE3MjU4MSxBTFZBUk8gU0lMVkEgUklCRUlSTyxNb2RlcmFkbyIsIjY0MzM4NTYsQU5BIFBBVUxMQSBERSBWQVNDT05DRUxPUyxNb2RlcmFkbyIsIjY4NjAzMjMsQU5EUkUgR09CQk8gUklCRUlSTyxBZ3Jlc3Npdm8iLCIxNzIwMzM0NyxBTkRSRSBTQ0hVU1RFUiBEQSBDT1NUQSxBZ3Jlc3Npdm8iLCI1NTMzMzk5LEFORFJFQSBVRUlST1ogQlJBTkRULEFncmVzc2l2byIsIjUxNjQ3NyxBTkdFTEEgTUFSSUEgWk9CT0xpLEFncmVzc2l2byIsIjI1MzAyOTQsQU5OQSBDQVJJTkEgUVVJTkhPIFJBTUFMSE8sTW9kZXJhZG8iLCI4NjQ2NTAwLEFOVE9OSU8gQ0FSTE9TIEJSSVpaSSxBZ3Jlc3Npdm8iLCI0MjQ4MzU5LEFOVE9OSU8gVklOSUNJVVMgREUgQVNTSVMgRkVJVE9TQSBKVU5JT1IsTW9kZXJhZG8iLCI1MTcwMDIsQVJUVFVSIENPUkRFSVJPIEdPTUVTIEFSQVVKTyxBZ3Jlc3Npdm8iLCIyNzc3NzA5LEFSVFhVUiBTQU5EUk8gR09MT01CSUVTS0kgRkVSUkVJUkEsQWdyZXNzaXZvIiwiNzk4NjQ2MixBUlRVUiBKT1NFIENPU1RBIFJBUE9TTyxBZ3Jlc3Npdm8iLCIxNzEzMDg1NCxCRU5UT05JU0EsTW9kZXJhZG8iLCI5MDA5NTg0LEJFUVVFU1QgQ0FQSVRBTCBBU1NFTVNPUiBERSBJTlZFU1RJTU9OVE9TIExUREEsQ29uc2VydmFkb3IiLCI1OTU1MDQsQlJFTkRBIE1PUkFJUyBERSBBTE1FSURBLE1vZGVyYWRvIiwiODA0MDk3MCxCUlVOTyBERSBNQVRPUyBCUklaWkksQWdyZXNzaXZvIiwiNzk2ODMzNyxCUlVOTyBET01JTkdVRVMgQUxFTkNBUiBERSBCQVJST1MsTW9kZXJhZG8iLCI2NDMzNzY5LENBSU8gS0xJUFBFTCBBTUFSQUwsQWdyZXNzaXZvIiwiNDk0NDY5OCxDQUlPIE1BUklPIE1FTExPIENPU1RBIE9MSVZFSVJBLE1vZGVyYWRvIiwiNzgxMTU1MSxDQUlPIE1BUklPIE1FTExPIENPU1RBIE9MSVZFSVJBIDIsTW9kZXJhZG8iLCI3MDQ1NjM5LENBSU8gTUFSSU8gTUVMTE8gQ09TVEEgT0xJVkVJUkEgU09CUklOSE8sQWdyZXNzaXZvIiwiMzUwNjMzLENBTFZJTiBMRUksTW9kZXJhZG8iLCIzNTQ0NTA0LENBU1NJQSBQQUlWQSBWSUVJUkEgQU5EUkFERSxBZ3Jlc3Npdm8iLCI0OTc3MTIsQ0FUSFJZTkUgTEVJLE1vZGVyYWRvIiwiOTIyNTA3MSxDSFJJU1RJTkUgUklCRUlSTyBNRUlSQSBFIGFBIE1vZGVyYWRvIiwiMjk4NTI1MixDWVJPIENFU0FSIFBBSVRPVCBSRU1JR0lPIEFMVkVTLENvbnNlcnZhZG9yIiwiMTA2ODM4LERBTklFTEEgUkFBQiBQSVJFUyxBZ3Jlc3Npdm8iLCIxODE4NjA0MixEQVZJIFJBTUFMSE8gREFMSUEsQ29uc2VydmFkb3IiLCIxMTg2ODIxNCxERUJPUkEgVEFUSUFOIFBBVUxJTk8gREEgU0lMVkEsQWdyZXNzaXZvIiwiMjI3MTcyMyxESU9HTyBGQVJLQVRUIEtBQkJBWixBZ3Jlc3Npdm8iLCIxODMwOTAxMixET1VHTEFTIEQgQUdPU1RJTkksQWdyZXNzaXZvIiwiMzYxMjk1OCxFRElOQVJETyBETyBOQVNDSU1FTlRPIEpVTklPUixBZ3Jlc3Npdm8iLCIyNjU3MjY5LEVEVUFSRE8gRlJFWVJFIENPU1RBIE9MSVZFSVJBLEFncmVzc2l2byIsIjQ3NTkyNCxFREdVQVJETyBIRU5SSVFVRSBQRVJFSVJBIERFIENBUlZBTEhPcyxNb2RlcmFkbyIsIjQzNzc3NDUsRUpPUyBTT1VaQSBNQVJUSU5TLEFncmVzc2l2byIsIjc2MTQyNDYsRUxBSU5FIENSSVNUWU5BIENPU1RBIERFIFBBVUxPLEFncmVzc2l2byIsIjcyNzcwNTUsRUxJU0lPIEdVRVJSQSBERSBTT1VaQSxBZ3Jlc3Npdm8iLCIyMjM1MzY1LEVMT0kgRkVSTkFORE8gQkFTU08sQWdyZXNzaXZvIiwiNzc1NTg1NCxFUklDTEVTIE1BUlRJTlMgQUxWRVMsTW9kZXJhZG8iLCI0OTAyMjE1LEZFTElQRSBBUkNISUxIQSBNQVJUSU5TICosQWdyZXNzaXZvIiwiNDExMzk4MSxGRUxJUEUgTEVBTCBST0RSSUdPIERFIE1PVVJBLGRlc2F0dWFsaXphZG8iLCIxMDM4MTA2LEZFUk5BTkRPIFFVQVJBTlRBIEJBUkhPU0EsTW9kZXJhZG8iLCI1MDgxNTkyLEZPWCBBRE1JTklTVFJBw4fDlUVTLEFncmVzc2l2byIsIjI5MjY5NDYsRlJBTkNJU0NPIFFVQVJBTlRBIE5FVE8sQWdyZXNzaXZvIiwiOTAxNTUzOCxHSUJSQU4gS0hBWUxZIEFSUlVEQSBORVRPLENvbnNlcnZhZG9yIiwiMTUwNTc4NTMsR0lPVkFOTkEgR1VTTUFPIE5PIERCQVJST1MgQ0FWQUxDQU5USSxTZW0gUGVyZmlsIiwiNzU3NTg0MCxHUkVUQSBZQUxFIExJTUEgRE9TIFNBTlRPUyxBZ3Jlc3Npdm8iLCIxMzU0NjAyMyxIIERBIENPU1RBIFBFUkVJUkEgTERUQSxBZ3Jlc3Npdm8iLCIxNTY2MzkzNSxIRUxFTklERVMgSkFDSVJBIENBVkFMQ0FOVEksQ29uc2VydmFkb3IiLCI0Mzg0OTgyLEhFTExZREEgTUFSQ0lBIFZJRVVSQSBETEFTIEZMT1JFUyxNb2RlcmFkbyIsIjE3OTQ1NzMzLEhPU0FOQSBNQVJJQSBERSBTT1VaQSBCT1NTQU4sTW9kZXJhZG8iLCI5MDg2MDMyLElOR1JZRCBHQUJSSUVMREEgTkFTQ0lNRU5UTyBTQU5UT1MsTW9kZXJhZG8iLCIxMTAxMDAwNyxJU0FCRUxBIE5PR1VFSVJBIEZFUk5BTkRFUyxBZ3Jlc3Npdm8iLCIyODc3MTIsSkFJUk8gQVJMSU5ETyBNQVRUT1MsQWdyZXNzaXZvIiwiMzM3MzQ0MCxKQUlSTyBKT1PDiSBBTUFSQUwgSlVOSU9SLENvbnNlcnZhZG9yIiwiMTgyMTcwODUsSkFORVRUIEpBTkUgTElCRVJBTElOTyxNb2RlcmFkbyIsIjI1OTk5ODgsSk9BTyBQQVVMTyBERSBBUkFVSk8gTUVERVJFSVJMLEFncmVzc2l2byIsIjE0ODI3NjU1LEpPQU8gUEVEUk8gR09NRVMgVkVMT1NPLE1vZGVyYWRvIiwiMTYzMTgzNzcsSk9TQU5FIE1BUklBLE1vZGVyYWRvIiwiNzgxMzM2MyxKT1NFIERFIE1FTExPIENPU1RBIE9MSVZFSVJBIFRJTEhPLEFncmVzc2l2byIsIjg2MTkwLEpPU0UgRVlNQVJEIE1PUkFFUyBERSBNRURFSVJPUyBGSUxITyxBZ3Jlc3Npdm8iLCIzNDkzOTksSk9TRSBHVUlMSEVSTUUgQ09TVEEgT0xJVkVJUkEgREUgVkFTQ09OQ0VMT1MsQWdyZXNzaXZvIiwiNjExOTcyMSxLQVJMRU5PIExPVVJFSVJPIERPUyBTQU5UT1MsTW9kZXJhZG8iLCIxNzI4ODQ2NSxLQVRJQSBDSUxFTkUgQ0FSTkVJUk8gREUgT0xJVkVJUkEsQ29uc2VydmFkb3IiLCIxNzYwNTk0MSxLQVRJQSBDSUxFTkUgQ0FSTkVJUk8gREUgT0xJVkVJUkEgMixDb25zZXJ2YWRvciIsIjE3NDEyNzcwLExBUkEgTEVDWSBOT0dVRUlSQSBCQVJCT1NBIERFIFNPVVNBIEZFSVRPU0EsQ29uc2VydmFkb3IiLCIyNTUxMjIwLExFT05BUkRPIENBTERBUyBRVUFSQU5UQSxBZ3Jlc3Npdm8iLCIyMzM4MjYxLExFT05BUkRPIFJBTUFMSE8gRElOSVogRk9SVEUgRlJFSVJFLE1vZGVyYWRvIiwiMTgyMzE1NDQsTElMTFkgQ0hPTkcgTEVJIFNBTlRPUyxNb2RlcmFkbyIsIjI5MjY3OTUsTElPTUFSIERFIE9MSVZFUkEgUVVBUkFOVEEsTW9kZXJhZG8iLCI0NDE3NTk3LExJT01BUiBNQVJJQSBERSBPTElWRVlSQSBRVUFSQU5UQSxkZXNhdHVhbGl6YWRvIiwiMzAzMzEzNSxMVUNBUyBTQU5UT1MgREUgU09VWkEsQWdyZXNzaXZvIiwiMzEyNjczNyxMVUNBUyBXSUxMSUFNIERFIFNPVVpBLEFncmVzc2l2byIsIjU2NjU2NTksTUFSQ0VMQSBTSUxWQSBURUlYRUlSQSwgTW9kZXJhZG8iLCIzNTc5NDYsTUFSQ0VMTEEgUVVJTkhPIFJBTUFMSE8sTW9kZXJhZG8iLCIxNzY4NzI5MixNQVJDRUxPIERFIE9MSVZFWTUgU09BUkVTMixBZ3Jlc3Npdm8iLCIzMzUzNTQ1LE1BUkNFTE8gSVNTQU1VIE9OTyxNb2RlcmFkbyIsIjI0NTc0MzQsTUFSQ0VMTyBLRU5KSSBMSU1BIE5JU0hJTkEsTW9kZXJhZG8iLCIyMTczMjM4LE1BUkNJQSBHTE9SSUEgVEFWQVJFUyBQRVJFSVJBIERFIENBUlZBTElITyxBZ3Jlc3Npdm8iLCI3MTc2OCxNQVJDSUEgUkFDSEVMIFBFUkVJUkEgREUgQ0FSVkFMSE8sQWdyZXNzaXZvIiwiMTQzNzI2ODYsTUFSSUEgQ0FST0xJTkEgR1VFUlJBIE1BTFRBLE1vZGVyYWRvIiwiNTkxNDY1MyxNQVJJQSBDRUNJTElBIEJSQU5EVCBDT1NUQSBPTElWRVVSQSxNb2RlcmFkbyIsIjY5MDc1MDAsTUFSSUEgQ0VDSUxJQSBDT1NUQSBPTElWRVJBIFZBU0NPTkNFTE9TIFBGQUxUWkdSQUZGLE1vZGVyYWRvIiwiMTU4MDkxNzQsTUFSSUEgRE8gQ0FSTU8gSVZBTkkgREUgVkFTQ09OQ0VMT1MsQWdyZXNzaXZvIiwiNzI2MzEyNixNQVJJQSBETyBDQVJNTyBSQU1PUyBQQSBTSVJWQSBSSVpCQVJSTyxNb2RlcmFkbyIsIjQwNjc4MCxNQVJJQSBMSURVSU5BIERFIFNPVVpBIEFSQVJVTkEgUklCRUlSTyxNb2RlcmFkbyIsIjM3NjIxMjUsTUFSSUEgTU5VRUxBIERFIEFSQVVKTyBNRURFSVJPUyxBZ3Jlc3Npdm8iLCI1MjYxODMxLE1BUklPIEFSVFhVUiBDT1NUQSBTQUxaQU5PLEFncmVzc2l2byIsIjY0NTk1NjUsTUFURVVTQ0VTQVJERSBBUkFSSlUgUk9EUklHVUVTPyxNb2RlcmFkbyIsIjExMTMxMjk1LE1BVVJPIEFMRU5DQVIgREUgQkFSUk9TLE1vZGVyYWRvIiwiNjQ3NDk2MSxOQVRBTElBIFRPUlJFUyBNQUlBLE1vZGVyYWRvIiwiNzcyNDIzMCxPTEdBIExJRElBIENPUlJBTEVTIFJVQklPLEFncmVzc2l2byIsIjkwNjc5MzAsUEFVTE8gQU5EUkUgTU9VU0lOSE8gQ09TVEEgT0xJVkVJUkEsQWdyZXNzaXZvIiwiNDE0MjcwNSxQQVVMTyBKT1NFIEhBSUVLIEFSQVVKTyxBZ3Jlc3Npdm8iLCI5Mjg0ODI3LFBBVUxPIFJPQkVSVE8gTkVSSSBERSBBVklaIFNJTFZBICosQWdyZXNzaXZvIiwiODgwMDc1MCxQRURSTyBIRU5SSVFVRSBQSVJFUyBERSBHT0RPWSxBZ3Jlc3Npdm8iLCIxODcyMjE2NCxQRUdNQVRFQ0gsQ29uc2VydmFkb3IiLCI5MDQyNjg0LFBST01PVkUgQURNSU5JU1RSQURPUkEgREUgQ09OU8OTUkNJT1MgTERUQSxDb25zZXJ2YWRvciIsIjQzMjYxMjAsUkFNT05BIENBVkFMQ0FOVEUgR1VJTUFSTkVTIEZSRVlSRSxNb2RlcmFkbyIsIjE4NjE2ODI2LFJJQ0FSRE8gREUgTUFDQURPIENIQVZFUyxNb2RlcmFkbyIsIjE0ODc2MDA3LFJPQkVSVEEgVklMTEFTIEJPQVMgQ0FSVkFMSE8gTUFSVElOUyxNb2RlcmFkbyIsIjE4OTg5NTI4LFJPQlNPTiBHT01FUyBQSU1FTlRFRCxDb25zZXJ2YWRvciIsIjU2MjI0MjcsUk9EUklHTyBOSUNPTEFVIFBGQUxUWkdSQUZGLEFncmVzc2l2byIsIjU3ODIwNixST01FUk8gRlJFWVJFIENPU1RBIE9MSVZFSVJBLEFncmVzc2l2byIsIjQxMDcyNzIsUk9TQU5HRUxBIE1BUklBIFJBTU9TIEJJWkFSUk8sTW9kZXJhZG8iLCIxMTU0NzE2NyxST1NFTFkgREFSREVzIFBJTUVOVEVMLEFncmVzc2l2byIsIjE3MDM2MjY3LFNBVUxPIFBJUVVFVCBEQSBDUlVaLEFncmVzc2l2byIsIjEyMTUxODQ0LFNFQkFTVElBTyBKT1JHRSBQRVJFSVJBLEFncmVzc2l2byIsIjEzMjczODY2LFNJVFZJTyBBUEFSRUNJRE8gQ09TVEEsQWdyZXNzaXZvIiwiMTE4NTk0NjQsU09OSUEgRlJFWVJFQ09TVEEsTW9kZXJhZG8iLCI3OTk5MDkwLFNPTklBIFJFR0lOQSBERVNESUFUT1MgQlJJWlpJLEFncmVzc2l2byIsIjg0NzQyODMsU09SQVlBIEdVRVJSQSBERSBTT1VaQSxNb2RlcmFkbyIsIjE5MzMzMTI1LFRBSU5BIEFNT1JJTSBERVBBVUxBLENvbnNlcnZhZG9yIiwiMzA5MDE5LFRBTVlSRVMgREFSREVTIFBJTUVOVEVMLE1vZGVyYWRvIiwiMzg3NDE5NixUQVRJQU5BIFZFQ0NISSBNQVJNTyxBZ3Jlc3Npdm8iLCIxNTQ5OTk4MixUSE9NQVogTEVBTyBEQSBDQVJNTyxBZ3Jlc3Npdm8iLCIyMzE5NTAwLFRJQkVSSU8gQ0FCUkFMIEdPTUVTIERFIFNPVVpBLE1vZGVyYWRvIiwiNTI4MjYsVFJBSkFOTyBSQU1BTEhPIEZJTEhPLE1vZGVyYWRvIiwiMTg4OTg0MDMsVkFMREVOQ0UgQkVaRVJSQSBBTFZFUyxNb2RlcmFkbyIsIjM2NTgwNDksVkFMRVJJQSBBUEFSRUNJREEgWkVSU0VSTkkgTUVOREVTLEFncmVzc2l2byIsIjI2Mjg1MDcsVkFNQkVSVE8gT0xJVkVJUkEgREUgQVpFVkVETyBNQUlBIEZJTEhPcyxBZ3Jlc3Npdm8iLCI2NjA0MzgxLFZBTkVTU0EgVklFSVJBIE1BR0FOSEEsQWdyZXNzaXZvIiwiNjg3ODkyMSxWSVJHSU5JQSBVSVpBIEdPQkJPIFJJQkVJUk8sQWdyZXNzaXZvIiwiMjgwNTIwNixXQUdORVIgTFVJWiBERSBTT1VaQSBTRUFCUkEsTW9kZXJhZG8iLCI0NjU2NjAyLFdBTERFTUFSIFRBREVVIFRBR0VVsixBZ3Jlc3Npdm8iLCI0NzQ4NzMyLFdBTFZSRURPIExVSVogREUgU09VWkEgU0VBQlJBLE1vZGVyYWRvIiwiNzA4NjIxNyxZQVNJRUwgTE9QRVogUkVRVUVKTyxBZ3Jlc3Npdm8iXQ==";
 
-// Função para normalizar texto
+// Função para decodificar e retornar o array de clientes
+function carregarClientes() {
+  try {
+    const reversed = dadosOfuscados.split('').reverse().join('');
+    const decoded = atob(reversed);
+    const rawArray = JSON.parse(decoded);
+    return rawArray.map(item => {
+      const [codigo, nome, perfil] = item.split(',');
+      return { codigo, nome, perfil };
+    });
+  } catch(e) {
+    console.error("Erro ao carregar dados.");
+    return [];
+  }
+}
+
+// Array protegido dentro de closure
+const clientesData = (function() {
+  const dados = carregarClientes();
+  Object.freeze(dados);
+  return dados;
+})();
+
+// ============================================================
+// FUNÇÕES AUXILIARES
+// ============================================================
 function normalize(str) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-// Mapeamento de perfil para classe de badge
 function getBadgeClass(perfil) {
   const p = (perfil || "").toLowerCase();
   if (p === "conservador") return "badge-conservador";
@@ -421,7 +314,6 @@ function renderSuggestions(filterText) {
     return;
   }
   
-  // Filtra por nome OU código
   const filtered = clientesData.filter(c => 
     normalize(c.nome).includes(term) || 
     c.codigo.includes(term)
@@ -471,7 +363,7 @@ function mostrarCliente(cliente) {
       <h2>📋 Dados do Cliente</h2>
       <div class="cliente-info">
         <div class="info-row">
-          <span class="info-label">Código XP:</span>
+          <span class="info-label">Código:</span>
           <span class="info-value">${cliente.codigo}</span>
         </div>
         <div class="info-row">
