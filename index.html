@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Busca de Clientes · Perfil de Investidor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Atkinson+Hyperlegible:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e1117; --bg2: #161b25; --bg3: #1c2333;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
+  --gold: #f5c842; --gold2: #e0a800;
+  --text: #e8eaf0; --text2: #8b93a7; --text3: #555e72;
+  --card-bg: #161b25; --card-border: rgba(255,255,255,0.07);
+  --header-bg: #161b25; --header-border: rgba(255,255,255,0.07);
+  --input-bg: #1c2333; --input-border: rgba(255,255,255,0.1);
+  --footer-border: rgba(255,255,255,0.07);
+}
+body.light {
+  --bg: #f5f7fa; --bg2: #ffffff; --bg3: #eef2f5;
+  --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.12);
+  --gold: #b8860b; --gold2: #9a6e0a;
+  --text: #1a1a2e; --text2: #2d3a4e; --text3: #5a6e8a;
+  --card-bg: #ffffff; --card-border: rgba(0,0,0,0.08);
+  --header-bg: #ffffff; --header-border: rgba(0,0,0,0.08);
+  --input-bg: #ffffff; --input-border: #ccc;
+  --footer-border: rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', 'Atkinson Hyperlegible', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.header { background: var(--header-bg); border-bottom: 1px solid var(--header-border); padding: 0 1rem; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.header-logo { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.dot { width: 28px; height: 28px; background: var(--gold); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #000; }
+.header-right { display: flex; align-items: center; gap: 0.8rem; }
+.header-date { font-size: 12px; color: var(--text3); }
+.theme-toggle { background: var(--bg3); border: 1px solid var(--border2); border-radius: 30px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: all 0.2s; }
+.theme-toggle:hover { border-color: var(--gold); transform: scale(1.05); }
+
+.main { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+.search-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 1.8rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.search-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: block;
+  color: var(--text2);
+}
+.search-wrapper {
+  position: relative;
+}
+.search-input {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 60px;
+  color: var(--text);
+  outline: none;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.search-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(245, 200, 66, 0.2);
+}
+.suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  display: none;
+}
+.suggestions.show {
+  display: block;
+}
+.suggestion-item {
+  padding: 12px 18px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+.suggestion-item:hover {
+  background: var(--bg3);
+}
+.suggestion-nome {
+  font-weight: 500;
+  font-size: 14px;
+}
+.suggestion-codigo {
+  font-size: 12px;
+  color: var(--gold);
+  font-family: monospace;
+}
+.suggestion-perfil {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.05);
+}
+
+.result-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 1.8rem;
+  text-align: center;
+}
+.result-card h2 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: var(--gold);
+  font-weight: 600;
+}
+.cliente-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+.info-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.info-label {
+  font-weight: 600;
+  color: var(--text2);
+  min-width: 90px;
+  text-align: left;
+}
+.info-value {
+  font-weight: 500;
+  font-size: 16px;
+  word-break: break-word;
+}
+.badge-perfil {
+  display: inline-block;
+  padding: 6px 18px;
+  border-radius: 60px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border: 1px solid transparent;
+}
+.badge-conservador {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+  border-color: rgba(46, 204, 113, 0.5);
+  text-shadow: 0 0 2px rgba(46,204,113,0.2);
+}
+.badge-moderado {
+  background: rgba(52, 152, 219, 0.2);
+  color: #5dade2;
+  border-color: rgba(52, 152, 219, 0.5);
+  text-shadow: 0 0 2px rgba(52,152,219,0.2);
+}
+.badge-agressivo {
+  background: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  border-color: rgba(231, 76, 60, 0.5);
+  text-shadow: 0 0 2px rgba(231,76,60,0.2);
+}
+.badge-desatualizado, .badge-sem-perfil {
+  background: rgba(149, 165, 166, 0.2);
+  color: #95a5a6;
+  border-color: rgba(149, 165, 166, 0.5);
+}
+body.light .badge-conservador { background: rgba(39, 174, 96, 0.2); color: #1e6b3e; border-color: #27ae60; }
+body.light .badge-moderado { background: rgba(41, 128, 185, 0.2); color: #1a5276; border-color: #2980b9; }
+body.light .badge-agressivo { background: rgba(192, 57, 43, 0.2); color: #922b21; border-color: #c0392b; }
+body.light .badge-desatualizado, body.light .badge-sem-perfil { background: rgba(127, 140, 141, 0.2); color: #7f8c8d; border-color: #bdc3c7; }
+
+.empty-message {
+  color: var(--text3);
+  font-size: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+.footer { text-align: center; font-size: 11px; color: var(--text3); padding: 1.5rem; border-top: 1px solid var(--footer-border); margin-top: 2rem; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo"><div class="dot">CR</div> Busca de Clientes · Perfil de Investidor</div>
+  <div class="header-right"><div class="header-date" id="hDate"></div><button class="theme-toggle" id="themeToggle" aria-label="Alternar tema claro/escuro">🌙</button></div>
+</header>
+
+<main class="main">
+  <div class="search-card">
+    <label class="search-label">🔍 Digite o nome do cliente (mínimo 3 letras)</label>
+    <div class="search-wrapper">
+      <input type="text" id="searchInput" class="search-input" placeholder="Ex.: ALESSANDRA, MARIA, JOÃO..." autocomplete="off">
+      <div id="suggestionsList" class="suggestions"></div>
+    </div>
+  </div>
+
+  <div id="resultContainer"></div>
+</main>
+<footer class="footer">📌 Digite pelo menos 3 letras para ver as sugestões. Clique em um cliente para visualizar o card completo.</footer>
+
+<script>
+// ============================================================
+// BASE DE CLIENTES (Código XP - Nome - Perfil)
+// ============================================================
+const clientesData = [
+  { codigo: "6681173", nome: "ALCIONE MARQUES FERNANDES", perfil: "Agressivo" },
+  { codigo: "15693646", nome: "ALESSANDRA BARRETO MIRANDA SEABRA", perfil: "Conservador" },
+  { codigo: "43280", nome: "ALESSANDRA GOMES GURGEL DO AMARAL", perfil: "Moderado" },
+  { codigo: "8172581", nome: "ALVARO SILVA RIBEIRO", perfil: "Moderado" },
+  { codigo: "6433856", nome: "ANA PAULLA DE VASCONCELOS", perfil: "Moderado" },
+  { codigo: "6860323", nome: "ANDRE GOBBO RIBEIRO", perfil: "Agressivo" },
+  { codigo: "17203347", nome: "ANDRE SCHUSTER DA COSTA", perfil: "Agressivo" },
+  { codigo: "5533399", nome: "ANDREA QUEIROZ BRANDT", perfil: "Agressivo" },
+  { codigo: "516477", nome: "ANGELA MARIA ZOBOLI", perfil: "Agressivo" },
+  { codigo: "2530294", nome: "ANNA CARINA QUINHO RAMALHO", perfil: "Moderado" },
+  { codigo: "8646500", nome: "ANTONIO CARLOS BRIZZI", perfil: "Agressivo" },
+  { codigo: "4248359", nome: "ANTONIO VINICIUS DE ASSIS FEITOSA JUNIOR", perfil: "Moderado" },
+  { codigo: "517002", nome: "ARTHUR CORDEIRO GOMES ARAUJO", perfil: "Agressivo" },
+  { codigo: "2777709", nome: "ARTHUR SANDRO GOLOMBIESKI FERREIRA", perfil: "Agressivo" },
+  { codigo: "7986462", nome: "ARTUR JOSE COSTA RAPOSO", perfil: "Agressivo" },
+  { codigo: "17130854", nome: "BENTONISA", perfil: "Moderado" },
+  { codigo: "9009584", nome: "BEQUEST CAPITAL ASSESSOR DE INVESTIMENTOS LTDA", perfil: "Conservador" },
+  { codigo: "595504", nome: "BRENDA MORAIS DE ALMEIDA", perfil: "Moderado" },
+  { codigo: "8040970", nome: "BRUNO DE MATOS BRIZZI", perfil: "Agressivo" },
+  { codigo: "7968337", nome: "BRUNO DOMINGUES ALENCAR DE BARROS", perfil: "Moderado" },
+  { codigo: "6433769", nome: "CAIO KLIPPEL AMARAL", perfil: "Agressivo" },
+  { codigo: "4944698", nome: "CAIO MARIO MELLO COSTA OLIVEIRA", perfil: "Moderado" },
+  { codigo: "7811551", nome: "CAIO MARIO MELLO COSTA OLIVEIRA 2", perfil: "Moderado" },
+  { codigo: "7045639", nome: "CAIO MARIO MELLO COSTA OLIVEIRA SOBRINHO", perfil: "Agressivo" },
+  { codigo: "350633", nome: "CALVIN LEI", perfil: "Moderado" },
+  { codigo: "3544504", nome: "CASSIA PAIVA VIEIRA ANDRADE", perfil: "Agressivo" },
+  { codigo: "497712", nome: "CATHRYNE LEI", perfil: "Moderado" },
+  { codigo: "9225071", nome: "CHRISTINE RIBEIRO MEIRA E SA", perfil: "Moderado" },
+  { codigo: "2985252", nome: "CYRO CESAR PALITOT REMIGIO ALVES", perfil: "Conservador" },
+  { codigo: "106838", nome: "DANIELA RAAB PIRES", perfil: "Agressivo" },
+  { codigo: "18186042", nome: "DAVI RAMALHO DALIA", perfil: "Conservador" },
+  { codigo: "11868214", nome: "DEBORA TATIANE PAULINO DA SILVA", perfil: "Agressivo" },
+  { codigo: "2271723", nome: "DIOGO FARKATT KABBAZ", perfil: "Agressivo" },
+  { codigo: "18309012", nome: "DOUGLAS D AGOSTINI", perfil: "Agressivo" },
+  { codigo: "3612958", nome: "EDINARDO DO NASCIMENTO JUNIOR", perfil: "Agressivo" },
+  { codigo: "2657269", nome: "EDUARDO FREYRE COSTA OLIVEIRA", perfil: "Agressivo" },
+  { codigo: "475924", nome: "EDUARDO HENRIQUE PEREIRA DE CARVALHO", perfil: "Moderado" },
+  { codigo: "4377745", nome: "EJOS SOUZA MARTINS", perfil: "Agressivo" },
+  { codigo: "7614246", nome: "ELAINE CRISTINA COSTA DE PAULO", perfil: "Agressivo" },
+  { codigo: "7277055", nome: "ELISIO GUERRA DE SOUZA", perfil: "Agressivo" },
+  { codigo: "2235365", nome: "ELOI FERNANDO BASSO", perfil: "Agressivo" },
+  { codigo: "7755854", nome: "ERICLES MARTINS ALVES", perfil: "Moderado" },
+  { codigo: "4902215", nome: "FELIPE ARCHILHA MARTINS*", perfil: "Agressivo" },
+  { codigo: "4113981", nome: "FELIPE LEAL RODRIGO DE MOURA", perfil: "desatualizado" },
+  { codigo: "1038106", nome: "FERNANDO QUARANTA BARBOSA", perfil: "Moderado" },
+  { codigo: "5081592", nome: "FOX ADMINISTRAÇÕES", perfil: "Agressivo" },
+  { codigo: "2926946", nome: "FRANCISCO QUARANTA NETO", perfil: "Agressivo" },
+  { codigo: "9015538", nome: "GIBRAN KHALYL ARRUDA NETO", perfil: "Conservador" },
+  { codigo: "15057853", nome: "GIOVANNA GUSMAO DE BARROS CAVALCANTI", perfil: "Sem Perfil" },
+  { codigo: "7575840", nome: "GRETA YALE LIMA DOS SANTOS", perfil: "Agressivo" },
+  { codigo: "13546023", nome: "H DA COSTA PEREIRA LTDA", perfil: "Agressivo" },
+  { codigo: "15663935", nome: "HELENIDES JACIRA CAVALCANTI", perfil: "Conservador" },
+  { codigo: "4384982", nome: "HELLYDA MARCIA VIEIRA DAS FLORES", perfil: "Moderado" },
+  { codigo: "17945733", nome: "HOSANA MARIA DE SOUZA BOSSAN", perfil: "Moderado" },
+  { codigo: "9086032", nome: "INGRYD GABRIELLA NASCIMENTO SANTOS", perfil: "Moderado" },
+  { codigo: "11010007", nome: "ISABELA NOGUEIRA FERNANDES", perfil: "Agressivo" },
+  { codigo: "287712", nome: "JAIRO ARLINDO MATTOS", perfil: "Agressivo" },
+  { codigo: "3373440", nome: "JAIRO JOSÉ AMARAL JUNIOR", perfil: "Conservador" },
+  { codigo: "18217085", nome: "JANETT JANE LIBERALINO", perfil: "Moderado" },
+  { codigo: "2599988", nome: "JOAO PAULO DE ARAUJO MEDEIROS", perfil: "Agressivo" },
+  { codigo: "14827655", nome: "JOAO PEDRO GOMES VELOSO", perfil: "Moderado" },
+  { codigo: "16318377", nome: "JOSANE MARIA", perfil: "Moderado" },
+  { codigo: "7813363", nome: "JOSE DE MELLO COSTA OLIVEIRA FILHO", perfil: "Agressivo" },
+  { codigo: "86190", nome: "JOSE EYMARD MORAES DE MEDEIROS FILHO", perfil: "Agressivo" },
+  { codigo: "349399", nome: "JOSE GUILHERME COSTA OLIVEIRA DE VASCONCELOS", perfil: "Agressivo" },
+  { codigo: "6119721", nome: "KARLENO LOUREIRO DOS SANTOS", perfil: "Moderado" },
+  { codigo: "17288465", nome: "KATIA CILENE CARNEIRO DE OLIVEIRA", perfil: "Conservador" },
+  { codigo: "17605941", nome: "KATIA CILENE CARNEIRO DE OLIVEIRA 2", perfil: "Conservador" },
+  { codigo: "17412770", nome: "LARA LECY NOGUEIRA BARBOSA DE SOUSA FEITOSA", perfil: "Conservador" },
+  { codigo: "2551220", nome: "LEONARDO CALDAS QUARANTA", perfil: "Agressivo" },
+  { codigo: "2338261", nome: "LEONARDO RAMALHO DINIZ FORTE FREIRE", perfil: "Moderado" },
+  { codigo: "18231544", nome: "LILLY CHONG LEI SANTOS", perfil: "Moderado" },
+  { codigo: "2926795", nome: "LIOMAR DE OLIVEIRA QUARANTA", perfil: "Moderado" },
+  { codigo: "4417597", nome: "LIOMAR MARIA DE OLIVEIRA QUARANTA", perfil: "desatualizado" },
+  { codigo: "3033135", nome: "LUCAS SANTOS DE SOUZA", perfil: "Agressivo" },
+  { codigo: "3126737", nome: "LUCAS WILLIAM DE SOUZA", perfil: "Agressivo" },
+  { codigo: "5665659", nome: "MARCELA SILVA TEIXEIRA", perfil: "Moderado" },
+  { codigo: "357946", nome: "MARCELLA QUINHO RAMALHO", perfil: "Moderado" },
+  { codigo: "17687292", nome: "MARCELO DE OLIVEIRA SOARES", perfil: "Agressivo" },
+  { codigo: "3353545", nome: "MARCELO ISSAMU ONO", perfil: "Moderado" },
+  { codigo: "2457434", nome: "MARCELO KENJI LIMA NISHINA", perfil: "Moderado" },
+  { codigo: "2173238", nome: "MARCIA GLORIA TAVARES PEREIRA DE CARVALHO", perfil: "Agressivo" },
+  { codigo: "71768", nome: "MARCIA RACHEL PEREIRA DE CARVALHO", perfil: "Agressivo" },
+  { codigo: "14372686", nome: "MARIA CAROLINA GUERRA MALTA", perfil: "Moderado" },
+  { codigo: "5914653", nome: "MARIA CECILIA BRANDT COSTA OLIVEIRA", perfil: "Moderado" },
+  { codigo: "6907500", nome: "MARIA CECILIA COSTA OLIVEIRA VASCONCELOS PFALTZGRAFF", perfil: "Moderado" },
+  { codigo: "15809174", nome: "MARIA DO CARMO IVANI DE VASCONCELOS", perfil: "Agressivo" },
+  { codigo: "7263126", nome: "MARIA DO CARMO RAMOS DA SILVA BIZARRO", perfil: "Moderado" },
+  { codigo: "406780", nome: "MARIA LIDUINA DE SOUZA ARARUNA RIBEIRO", perfil: "Moderado" },
+  { codigo: "3762125", nome: "MARIA MANUELA DE ARAUJO MEDEIROS", perfil: "Agressivo" },
+  { codigo: "5261831", nome: "MARIO ARTHUR COSTA SALZANO", perfil: "Agressivo" },
+  { codigo: "6459565", nome: "MATEUS CESAR DE ARAUJO RODRIGUES", perfil: "Moderado" },
+  { codigo: "11131295", nome: "MAURO ALENCAR DE BARROS", perfil: "Moderado" },
+  { codigo: "6474961", nome: "NATALIA TORRES MAIA", perfil: "Moderado" },
+  { codigo: "7724230", nome: "OLGA LIDIA CORRALES RUBIO", perfil: "Agressivo" },
+  { codigo: "9067930", nome: "PAULO ANDRE MOUSINHO COSTA OLIVEIRA", perfil: "Agressivo" },
+  { codigo: "4142705", nome: "PAULO JOSE HAIEK ARAUJO", perfil: "Agressivo" },
+  { codigo: "9284827", nome: "PAULO ROBERTO NERI DE AVIZ SILVA*", perfil: "Agressivo" },
+  { codigo: "8800750", nome: "PEDRO HENRIQUE PIRES DE GODOY", perfil: "Agressivo" },
+  { codigo: "18722164", nome: "PEGMATECH", perfil: "Conservador" },
+  { codigo: "9042684", nome: "PROMOVE ADMINISTRADORA DE CONSÓRCIOS LTDA", perfil: "Conservador" },
+  { codigo: "4326120", nome: "RAMONA CAVALCANTE GUIMARAES FREYRE", perfil: "Moderado" },
+  { codigo: "18616826", nome: "RICARDO DE MACEDO CHAVES", perfil: "Moderado" },
+  { codigo: "14876007", nome: "ROBERTA VILLAS BOAS CARVALHO MARTINS", perfil: "Moderado" },
+  { codigo: "18989528", nome: "ROBSON GOMES PIMENTEL", perfil: "Conservador" },
+  { codigo: "5622427", nome: "RODRIGO NICOLAU PFALTZGRAFF", perfil: "Agressivo" },
+  { codigo: "578206", nome: "ROMERO FREYRE COSTA OLIVEIRA", perfil: "Agressivo" },
+  { codigo: "4107272", nome: "ROSANGELA MARIA RAMOS BIZARRO", perfil: "Moderado" },
+  { codigo: "11547167", nome: "ROSELY DARDES PIMENTEL", perfil: "Agressivo" },
+  { codigo: "17036267", nome: "SAULO PIQUET DA CRUZ", perfil: "Agressivo" },
+  { codigo: "12151844", nome: "SEBASTIAO JORGE PEREIRA", perfil: "Agressivo" },
+  { codigo: "13273866", nome: "SILVIO APARECIDO COSTA", perfil: "Agressivo" },
+  { codigo: "11859464", nome: "SONIA FREYRE COSTA", perfil: "Moderado" },
+  { codigo: "7999090", nome: "SONIA REGINA DE MATOS BRIZZI", perfil: "Agressivo" },
+  { codigo: "8474283", nome: "SORAYA GUERRA DE SOUZA", perfil: "Moderado" },
+  { codigo: "19333125", nome: "TAINA AMORIM DE PAULA", perfil: "Conservador" },
+  { codigo: "309019", nome: "TAMYRES DARDES PIMENTEL", perfil: "Moderado" },
+  { codigo: "3874196", nome: "TATIANA VECCHI MARMO", perfil: "Agressivo" },
+  { codigo: "15499982", nome: "THOMAZ LEAO DO CARMO", perfil: "Agressivo" },
+  { codigo: "2319500", nome: "TIBERIO CABRAL GOMES DE SOUZA", perfil: "Moderado" },
+  { codigo: "52826", nome: "TRAJANO RAMALHO FILHO", perfil: "Moderado" },
+  { codigo: "18898403", nome: "VALDENICE BEZERRA ALVES", perfil: "Moderado" },
+  { codigo: "3658049", nome: "VALERIA APARECIDA ZERBINI MENDES", perfil: "Agressivo" },
+  { codigo: "2628507", nome: "VAMBERTO OLIVEIRA DE AZEVEDO MAIA FILHO", perfil: "Agressivo" },
+  { codigo: "6604381", nome: "VANESSA VIEIRA MAGANHA", perfil: "Agressivo" },
+  { codigo: "6878921", nome: "VIRGINIA LUIZA GOBBO RIBEIRO", perfil: "Agressivo" },
+  { codigo: "2805206", nome: "WAGNER LUIZ DE SOUZA SEABRA", perfil: "Moderado" },
+  { codigo: "4656602", nome: "WALDEMAR TADEU FIGUEIRA", perfil: "Agressivo" },
+  { codigo: "4748732", nome: "WALFREDO LUIZ DE SOUZA SEABRA", perfil: "Moderado" },
+  { codigo: "7086217", nome: "YASIEL LOPEZ REQUEJO", perfil: "Agressivo" }
+];
+
+// Função para normalizar texto (sem acentos, caixa alta)
+function normalize(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// Mapeamento de perfil para classe de badge
+function getBadgeClass(perfil) {
+  const p = (perfil || "").toLowerCase();
+  if (p === "conservador") return "badge-conservador";
+  if (p === "moderado") return "badge-moderado";
+  if (p === "agressivo") return "badge-agressivo";
+  if (p === "desatualizado") return "badge-desatualizado";
+  return "badge-sem-perfil";
+}
+
+// Formatar nome do perfil para exibição
+function formatPerfil(perfil) {
+  if (!perfil) return "Não informado";
+  if (perfil.toLowerCase() === "desatualizado") return "Desatualizado";
+  if (perfil.toLowerCase() === "sem perfil") return "Sem Perfil";
+  return perfil.charAt(0).toUpperCase() + perfil.slice(1).toLowerCase();
+}
+
+// Renderizar sugestões
+function renderSuggestions(filterText) {
+  const searchTerm = normalize(filterText);
+  if (searchTerm.length < 3) {
+    document.getElementById('suggestionsList').classList.remove('show');
+    return;
+  }
+  
+  const filtered = clientesData.filter(c => normalize(c.nome).includes(searchTerm));
+  const suggestionsDiv = document.getElementById('suggestionsList');
+  
+  if (filtered.length === 0) {
+    suggestionsDiv.innerHTML = '<div class="suggestion-item" style="justify-content:center;">Nenhum cliente encontrado</div>';
+    suggestionsDiv.classList.add('show');
+    return;
+  }
+  
+  let html = '';
+  filtered.slice(0, 15).forEach(cliente => {
+    const badgeClass = getBadgeClass(cliente.perfil);
+    const perfilExib = formatPerfil(cliente.perfil);
+    html += `
+      <div class="suggestion-item" data-codigo="${cliente.codigo}" data-nome="${cliente.nome.replace(/"/g, '&quot;')}" data-perfil="${cliente.perfil}">
+        <div>
+          <div class="suggestion-nome">${cliente.nome}</div>
+          <div class="suggestion-codigo">Código: ${cliente.codigo}</div>
+        </div>
+        <span class="suggestion-perfil ${badgeClass}">${perfilExib}</span>
+      </div>
+    `;
+  });
+  suggestionsDiv.innerHTML = html;
+  suggestionsDiv.classList.add('show');
+  
+  // Adiciona eventos de clique nas sugestões
+  document.querySelectorAll('.suggestion-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const codigo = item.dataset.codigo;
+      const nome = item.dataset.nome;
+      const perfil = item.dataset.perfil;
+      mostrarCliente({ codigo, nome, perfil });
+      document.getElementById('searchInput').value = nome;
+      suggestionsDiv.classList.remove('show');
+    });
+  });
+}
+
+function mostrarCliente(cliente) {
+  const badgeClass = getBadgeClass(cliente.perfil);
+  const perfilExib = formatPerfil(cliente.perfil);
+  const resultHtml = `
+    <div class="result-card">
+      <h2>📋 Dados do Cliente</h2>
+      <div class="cliente-info">
+        <div class="info-row">
+          <span class="info-label">Código XP:</span>
+          <span class="info-value">${cliente.codigo}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Nome:</span>
+          <span class="info-value">${cliente.nome}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Perfil:</span>
+          <span class="badge-perfil ${badgeClass}">${perfilExib}</span>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('resultContainer').innerHTML = resultHtml;
+}
+
+// Evento de input na busca
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', (e) => {
+  const val = e.target.value;
+  renderSuggestions(val);
+});
+
+// Fechar sugestões ao clicar fora
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-wrapper')) {
+    document.getElementById('suggestionsList').classList.remove('show');
+  }
+});
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const btnTheme = document.getElementById('themeToggle');
+  if (savedTheme === 'light') { document.body.classList.add('light'); btnTheme.textContent = '☀️'; }
+  else { document.body.classList.remove('light'); btnTheme.textContent = '🌙'; }
+  btnTheme.addEventListener('click', () => {
+    if (document.body.classList.contains('light')) {
+      document.body.classList.remove('light');
+      localStorage.setItem('theme', 'dark');
+      btnTheme.textContent = '🌙';
+    } else {
+      document.body.classList.add('light');
+      localStorage.setItem('theme', 'light');
+      btnTheme.textContent = '☀️';
+    }
+  });
+}
+
+document.getElementById('hDate').textContent = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+initTheme();
+</script>
+</body>
+</html>
